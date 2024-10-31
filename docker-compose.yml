@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  db:
+    container_name: db
+    image: "postgres:15-alpine"
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg-data:/pg-data
+    env_file:
+      - '.env'
+
+volumes:
+  pg-data:

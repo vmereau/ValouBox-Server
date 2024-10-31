@@ -27,6 +27,13 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
+## Shortcuts
+
+Generate a migration file based on entity differences:
+```bash
+$ npm run typeorm:generate-migration ./src/database/migrations/{migrationName}
+```
+
 ## Test
 
 ```bash

@@ -21,4 +21,12 @@ export class UserDao {
   public create(user: Partial<User>, em?: EntityManager): Promise<User> {
     return this._getRepository(em).save(user);
   }
+
+  public getByName(name: string, em?: EntityManager): Promise<User> {
+    return this._getRepository(em).findOne({
+      where: {
+        name: name,
+      },
+    });
+  }
 }
