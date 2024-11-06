@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
 import { Exclude } from "class-transformer";
 
 @Entity({ name: 'user' })
@@ -15,4 +15,7 @@ export class User {
   @Column({ type: 'text', nullable: true })
   @Exclude()
   password: string;
+
+  @CreateDateColumn({ name: 'creation_date' })
+  creationDate: Date;
 }
