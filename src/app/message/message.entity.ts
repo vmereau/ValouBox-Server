@@ -24,6 +24,9 @@ export class Message {
   })
   sender: User;
 
+  @Column({ name: 'channel', type: 'text', nullable: true })
+  channel: string;
+
   @Column({ name: 'content', type: 'text', nullable: true })
   content: string;
 

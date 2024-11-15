@@ -6,6 +6,7 @@ import { Request } from 'express';
 
 export interface PostMessage {
   sender: User;
+  channel: string;
   content: string;
 }
 
@@ -20,6 +21,7 @@ export class MessageController {
   ): Promise<Message> {
     return this.messageService.createMessage(
       body.content,
+      body.channel,
       body.sender,
       request.em,
     );

@@ -16,4 +16,8 @@ export class UserService {
 
     return this.userDao.create(newUser, em);
   }
+
+  public async findOneById(id: number): Promise<User> {
+    return this.userDao.findOneById(id);
+  }
 }

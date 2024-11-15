@@ -22,11 +22,19 @@ export class UserDao {
     return this._getRepository(em).save(user);
   }
 
-  public getByName(name: string, em?: EntityManager): Promise<User> {
+  public findOneByName(name: string, em?: EntityManager): Promise<User> {
     return this._getRepository(em).findOne({
       where: {
         name: name,
       },
+    });
+  }
+
+  public findOneById(id: number, em?: EntityManager): Promise<User> {
+    return this._getRepository(em).findOne({
+      where: {
+        id: id
+      }
     });
   }
 }

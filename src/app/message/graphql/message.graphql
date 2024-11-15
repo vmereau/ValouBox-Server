@@ -1,0 +1,22 @@
+scalar Date
+directive @upper on FIELD_DEFINITION
+
+type Message {
+    id: Int!
+    content: String
+    creationDate: Date
+    sender: User
+    channel: String @upper
+}
+
+type Query {
+    message(id: Int!): Message
+}
+
+type Mutation {
+    postMessage(content: String!, senderId: Int!, channel: String!): Message
+}
+
+type Subscription {
+    messageAdded(channel: String!): Message
+}

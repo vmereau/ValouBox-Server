@@ -1,0 +1,9 @@
+type User implements Human {
+    id: Int!
+    name: String!
+    messages: [Message]
+}
+
+type Query {
+    user(id: Int!): User
+}

@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { Observable, catchError, tap, throwError } from 'rxjs';
 import { DataSource } from 'typeorm';
+import { GqlContextType } from "@nestjs/graphql";
 
 @Injectable()
 export class TypeormTransactionInterceptor implements NestInterceptor {
@@ -18,6 +19,11 @@ export class TypeormTransactionInterceptor implements NestInterceptor {
     context: ExecutionContext,
     next: CallHandler,
   ): Promise<Observable<unknown>> {
+
+    if(context.getType<GqlContextType>() === "graphql"){
+      return next.handle();
+    }
+
     const httpContext = context.switchToHttp();
     const req = httpContext.getRequest();
 

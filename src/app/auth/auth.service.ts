@@ -18,7 +18,7 @@ export class AuthService {
     password: string,
     em?: EntityManager,
   ): Promise<User> {
-    const user = await this.userDao.getByName(name, em);
+    const user = await this.userDao.findOneByName(name, em);
 
     if (!user) {
       return null;

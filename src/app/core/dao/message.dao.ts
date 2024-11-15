@@ -2,6 +2,7 @@ import { Message } from '../../message/message.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Injectable } from '@nestjs/common';
 import { EntityManager, Repository } from 'typeorm';
+import { User } from "../../user/user.entity";
 
 @Injectable()
 export class MessageDao {
@@ -23,5 +24,23 @@ export class MessageDao {
     em?: EntityManager,
   ): Promise<Message> {
     return this._getRepository(em).save(message);
+  }
+
+  public findOneById(id: number, em?: EntityManager): Promise<Message> {
+    return this._getRepository(em).findOne({
+      where: {
+        id: id
+      }
+    });
+  }
+
+  public findAllByUserId(userId: number, em?: EntityManager): Promise<Message[]> {
+    return this._getRepository(em).find({
+      where: {
+        sender: {
+          id: userId
+        }
+      }
+    });
   }
 }
