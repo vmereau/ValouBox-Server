@@ -1,0 +1,15 @@
+type Channel {
+    id: Int!
+    name: String
+    creator: User
+    creationDate: Date
+}
+
+type Query {
+    channel(id: Int!): Channel
+}
+
+type Mutation {
+    postChannel(name: String!, creatorId: Int!): Channel
+}
+

@@ -16,6 +16,7 @@ import { join } from 'path';
 import { upperDirectiveTransformer } from "./core/graphql/directives/upper-case.directive";
 import { PubSub } from "graphql-subscriptions";
 import { GlobalModule } from "./global.module";
+import { ChannelModule } from "./channel/channel.module";
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { GlobalModule } from "./global.module";
     RouterModule.register(appRoutes),
     DatabaseModule,
     AuthModule,
+    ChannelModule,
     GlobalModule,
     ConfigModule.forRoot({
       envFilePath: '.env',

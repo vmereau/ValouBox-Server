@@ -4,12 +4,17 @@ import { Message } from "../message.entity";
 import { UserDao } from "../../core/dao/user.dao";
 import { Inject } from "@nestjs/common";
 import { PubSub } from "graphql-subscriptions";
+import { ChannelDao } from "../../core/dao/channel.dao";
+import { Channel } from "../../channel/channel.entity";
+import { User } from "../../user/user.entity";
+import { UknownChannelError, UknownUserError } from "../message.errors";
 
 @Resolver('Message')
 export class MessageResolver {
   constructor(
     private messageService: MessageService,
     private readonly userDao: UserDao,
+    private readonly channelDao: ChannelDao,
     @Inject('PUB_SUB') private pubSub: PubSub
   ) {}
 
@@ -19,9 +24,17 @@ export class MessageResolver {
   }
 
   @Mutation('postMessage')
-  async postMessage(@Args('content') content: string, @Args('senderId') senderId: number, @Args('channel') channel: string): Promise<Message> {
+  async postMessage(@Args('content') content: string, @Args('senderId') senderId: number, @Args('channelId') channelId: number): Promise<Message> {
+    const sender: User = await this.userDao.findOneById(senderId);
+    if(!sender) {
+      throw new UknownUserError();
+    }
 
-    const sender = await this.userDao.findOneById(senderId);
+    const channel: Channel = await this.channelDao.findOneById(channelId);
+    if(!channel) {
+      throw new UknownChannelError();
+    }
+
     const newMessage: Message = await this.messageService.createMessage(content, channel, sender);
 
     await this.pubSub.publish('messageAdded', { newMessage, channel });

@@ -12,8 +12,15 @@ export interface Human {
     name: string;
 }
 
+export class Channel {
+    creationDate?: Nullable<Date>;
+    creator?: Nullable<User>;
+    id: number;
+    name?: Nullable<string>;
+}
+
 export class Message {
-    channel?: Nullable<string>;
+    channel?: Nullable<Channel>;
     content?: Nullable<string>;
     creationDate?: Nullable<Date>;
     id: number;
@@ -21,10 +28,14 @@ export class Message {
 }
 
 export abstract class IMutation {
-    abstract postMessage(channel: string, content: string, senderId: number): Nullable<Message> | Promise<Nullable<Message>>;
+    abstract postChannel(creatorId: number, name: string): Nullable<Channel> | Promise<Nullable<Channel>>;
+
+    abstract postMessage(channelId: number, content: string, senderId: number): Nullable<Message> | Promise<Nullable<Message>>;
 }
 
 export abstract class IQuery {
+    abstract channel(id: number): Nullable<Channel> | Promise<Nullable<Channel>>;
+
     abstract message(id: number): Nullable<Message> | Promise<Nullable<Message>>;
 
     abstract user(id: number): Nullable<User> | Promise<Nullable<User>>;
@@ -35,6 +46,7 @@ export abstract class ISubscription {
 }
 
 export class User implements Human {
+    createdChannels?: Nullable<Nullable<Channel>[]>;
     id: number;
     messages?: Nullable<Nullable<Message>[]>;
     name: string;

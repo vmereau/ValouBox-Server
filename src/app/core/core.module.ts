@@ -5,6 +5,8 @@ import { MessageDao } from './dao/message.dao';
 import { EntityManager, QueryRunner } from 'typeorm';
 import { UserDao } from "./dao/user.dao";
 import { User } from "../user/user.entity";
+import { ChannelDao } from "./dao/channel.dao";
+import { Channel } from "../channel/channel.entity";
 
 // Extend globally the Request type from Express to allow custom properties on the base type
 declare global {
@@ -17,11 +19,11 @@ declare global {
   }
 }
 
-const daos: Provider[] = [MessageDao, UserDao];
+const daos: Provider[] = [MessageDao, UserDao, ChannelDao];
 
 @Global()
 @Module({
-  imports: [TypeOrmModule.forFeature([Message, User])],
+  imports: [TypeOrmModule.forFeature([Message, User, Channel])],
   providers: daos,
   exports: daos,
 })

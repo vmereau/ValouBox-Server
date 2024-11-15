@@ -6,7 +6,7 @@ type Message {
     content: String
     creationDate: Date
     sender: User
-    channel: String @upper
+    channel: Channel
 }
 
 type Query {
@@ -14,7 +14,7 @@ type Query {
 }
 
 type Mutation {
-    postMessage(content: String!, senderId: Int!, channel: String!): Message
+    postMessage(content: String!, senderId: Int!, channelId: Int!): Message
 }
 
 type Subscription {

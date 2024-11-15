@@ -7,6 +7,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Channel } from "../channel/channel.entity";
 
 @Entity({ name: 'message' })
 export class Message {
@@ -18,14 +19,19 @@ export class Message {
 
   @ManyToOne(() => User)
   @JoinColumn({
-    name: 'user_id',
+    name: 'sender_id',
     referencedColumnName: 'id',
     foreignKeyConstraintName: 'FK_message_sender',
   })
   sender: User;
 
-  @Column({ name: 'channel', type: 'text', nullable: true })
-  channel: string;
+  @ManyToOne(() => Channel)
+  @JoinColumn({
+    name: 'channel_id',
+    referencedColumnName: 'id',
+    foreignKeyConstraintName: 'FK_message_channel',
+  })
+  channel: Channel;
 
   @Column({ name: 'content', type: 'text', nullable: true })
   content: string;

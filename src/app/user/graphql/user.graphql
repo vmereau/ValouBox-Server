@@ -2,6 +2,7 @@ type User implements Human {
     id: Int!
     name: String!
     messages: [Message]
+    createdChannels: [Channel]
 }
 
 type Query {

@@ -4,6 +4,7 @@ import { User } from '../user/user.entity';
 import { EntityManager } from 'typeorm';
 import { MessageDao } from '../core/dao/message.dao';
 import { UserDao } from "../core/dao/user.dao";
+import { Channel } from "../channel/channel.entity";
 
 @Injectable()
 export class MessageService {
@@ -14,7 +15,7 @@ export class MessageService {
 
   public async createMessage(
     content: string,
-    channel: string,
+    channel: Channel,
     sender: User,
     em?: EntityManager,
   ): Promise<Message> {
