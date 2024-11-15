@@ -1,0 +1,11 @@
+mutation PostNewMessage($content: String!, $senderId: Int!, $channelId: Int!) {
+    postMessage(content: $content, senderId:  $senderId, channelId: $channelId) {
+        id,
+        content,
+        creationDate,
+        sender {
+            id,
+            name
+        }
+    }
+}

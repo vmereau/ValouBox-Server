@@ -1,0 +1,23 @@
+fragment message on Message {
+    id
+    content
+    creationDate @include(if: $withDates)
+}
+
+fragment channel on Channel {
+    id,
+    name
+}
+
+query FindUserById($id: Int!, $withMessages: Boolean!, $withDates: Boolean!, $withCreatedChannels: Boolean!) {
+    user(id: $id) {
+        id
+        name
+        messages @include(if: $withMessages) {
+            ...message
+        }
+        createdChannels @include(if: $withCreatedChannels) {
+            ...channel
+        }
+    }
+}

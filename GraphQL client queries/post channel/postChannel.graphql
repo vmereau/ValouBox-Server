@@ -1,0 +1,11 @@
+mutation PostNewChannel($name: String!, $creatorId: Int!) {
+    postChannel(name: $name, creatorId:  $creatorId) {
+        id,
+        name,
+        creationDate,
+        creator {
+            id,
+            name
+        }
+    }
+}

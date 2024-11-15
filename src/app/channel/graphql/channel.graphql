@@ -1,6 +1,8 @@
+directive @upper on FIELD_DEFINITION
+
 type Channel {
     id: Int!
-    name: String
+    name: String @upper
     creator: User
     creationDate: Date
 }

@@ -1,5 +1,4 @@
 scalar Date
-directive @upper on FIELD_DEFINITION
 
 type Message {
     id: Int!
