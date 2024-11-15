@@ -6,7 +6,8 @@ I did this side project mainly to discover how NestJs websockets works.
 
 Features:
  - PostgreSQL database with TypeORM and migrations
- - transaction interceptor to have 1 database transaction per endpoint call
+ - transaction interceptor to have 1 database transaction per endpoint call for REST API
+ - GraphQL integration with queries, mutations and subscriptions
 
 ## Installation
 
