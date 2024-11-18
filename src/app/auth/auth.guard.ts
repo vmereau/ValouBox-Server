@@ -7,7 +7,7 @@ import { IS_PUBLIC_KEY } from "../core/decorators/public.decorator";
 import { UnauthorizedUserError } from "./auth.errors";
 import { JwtPayload, JwtType } from "./auth.types";
 import { UserDao } from "../core/dao/user.dao";
-import { User } from "../../graphql";
+import { GqlContextType, GqlExecutionContext } from "@nestjs/graphql";
 
 /**
  * Authenticate by JWT and check for user availability
@@ -32,7 +32,13 @@ export class AuthGuard implements CanActivate {
       return true;
     }
 
-    const request: Request = context.switchToHttp().getRequest();
+    let request: Request;
+    if(context.getType<GqlContextType>() === "graphql"){
+      const gqlCtx = GqlExecutionContext.create(context);
+      request = gqlCtx.getContext().req;
+    } else {
+      request = context.switchToHttp().getRequest();
+    }
 
     let token;
 
@@ -76,6 +82,10 @@ export class AuthGuard implements CanActivate {
 
     if(!request.cookies?.access_token){
       const cookiesHeaders = request.headers.cookie;
+
+      if(!cookiesHeaders){
+        return undefined;
+      }
 
       for (const cookieString of cookiesHeaders.split("; ")) {
         if(cookieString.includes("access_token")) {
