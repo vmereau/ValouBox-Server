@@ -7,14 +7,11 @@ import { TypeormTransactionInterceptor } from './core/typeorm-transaction.interc
 import { UserModule } from './user/user.module';
 import { CoreModule } from "./core/core.module";
 import { AuthModule } from "./auth/auth.module";
-import { ConfigService } from "@nestjs/config";
-import { JwtModule } from "@nestjs/jwt";
 import { ConfigModule } from "@nestjs/config/dist";
 import { GraphQLModule } from "@nestjs/graphql";
 import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
 import { join } from 'path';
 import { upperDirectiveTransformer } from "./core/graphql/directives/upper-case.directive";
-import { PubSub } from "graphql-subscriptions";
 import { GlobalModule } from "./global.module";
 import { ChannelModule } from "./channel/channel.module";
 
@@ -32,18 +29,6 @@ import { ChannelModule } from "./channel/channel.module";
       envFilePath: '.env',
       isGlobal: true,
     }),
-    {
-      ...JwtModule.registerAsync({
-        inject: [ConfigService],
-        useFactory: (config: ConfigService) => {
-          return {
-            secret: config.get<string>('JWT_SECRET'),
-          };
-        },
-        imports: [],
-      }),
-      global: true,
-    },
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       installSubscriptionHandlers: true,

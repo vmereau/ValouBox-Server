@@ -37,7 +37,7 @@ export class AuthService {
   }
 
   public generateAccessToken(user: User): string {
-    const payload: JwtPayload = { sub: user.name, type: JwtType.Access };
+    const payload: JwtPayload = { sub: user.id + "", type: JwtType.Access };
 
     return this.jwtService.sign(payload, {
       expiresIn: '30d',
