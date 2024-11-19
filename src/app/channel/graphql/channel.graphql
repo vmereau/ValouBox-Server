@@ -12,6 +12,12 @@ type Query {
 }
 
 type Mutation {
-    postChannel(name: String!, creatorId: Int!): Channel
+    postChannel(name: String!): Channel
+    joinChannel(channelId: Int!): [User]
+}
+
+type Subscription {
+    newMessage(channelId: Int!): Message
+    userListUpdate(channelId: Int!): [User]
 }
 

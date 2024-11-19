@@ -7,7 +7,9 @@ import {
 } from '@nestjs/common';
 import { Observable, catchError, tap, throwError } from 'rxjs';
 import { DataSource } from 'typeorm';
-import { GqlContextType } from "@nestjs/graphql";
+import { GqlContextType, GqlExecutionContext } from "@nestjs/graphql";
+import { Request } from "express";
+import { getGraphqlSubscriptionRequestContext } from "./helpers";
 
 @Injectable()
 export class TypeormTransactionInterceptor implements NestInterceptor {
@@ -19,13 +21,15 @@ export class TypeormTransactionInterceptor implements NestInterceptor {
     context: ExecutionContext,
     next: CallHandler,
   ): Promise<Observable<unknown>> {
+    let req: Request;
 
     if(context.getType<GqlContextType>() === "graphql"){
-      return next.handle();
-    }
+      const gqlCtx = GqlExecutionContext.create(context);
 
-    const httpContext = context.switchToHttp();
-    const req = httpContext.getRequest();
+      req = gqlCtx.getContext().req?.subscriptions ? getGraphqlSubscriptionRequestContext(gqlCtx.getContext()) : gqlCtx.getContext().req;
+    } else {
+      req = context.switchToHttp().getRequest();
+    }
 
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();

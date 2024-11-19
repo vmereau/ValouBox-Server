@@ -7,6 +7,7 @@ import { UserDao } from "./dao/user.dao";
 import { User } from "../user/user.entity";
 import { ChannelDao } from "./dao/channel.dao";
 import { Channel } from "../channel/channel.entity";
+import { GraphQLExecutionContext } from "@nestjs/graphql";
 
 // Extend globally the Request type from Express to allow custom properties on the base type
 declare global {
@@ -15,9 +16,15 @@ declare global {
     interface Request {
       queryRunner: QueryRunner;
       em: EntityManager;
+      user: User
     }
   }
 }
+
+export type GraphQLContext = GraphQLExecutionContext & {
+  req: Request;
+  res: Request;
+};
 
 const daos: Provider[] = [MessageDao, UserDao, ChannelDao];
 

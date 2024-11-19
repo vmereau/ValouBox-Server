@@ -28,9 +28,11 @@ export class Message {
 }
 
 export abstract class IMutation {
-    abstract postChannel(creatorId: number, name: string): Nullable<Channel> | Promise<Nullable<Channel>>;
+    abstract joinChannel(channelId: number): Nullable<Nullable<User>[]> | Promise<Nullable<Nullable<User>[]>>;
 
-    abstract postMessage(channelId: number, content: string, senderId: number): Nullable<Message> | Promise<Nullable<Message>>;
+    abstract postChannel(name: string): Nullable<Channel> | Promise<Nullable<Channel>>;
+
+    abstract postMessage(channelId: number, content: string): Nullable<Message> | Promise<Nullable<Message>>;
 }
 
 export abstract class IQuery {
@@ -42,7 +44,9 @@ export abstract class IQuery {
 }
 
 export abstract class ISubscription {
-    abstract messageAdded(channel: string): Nullable<Message> | Promise<Nullable<Message>>;
+    abstract newMessage(channelId: number): Nullable<Message> | Promise<Nullable<Message>>;
+
+    abstract userListUpdate(channelId: number): Nullable<Nullable<User>[]> | Promise<Nullable<Nullable<User>[]>>;
 }
 
 export class User implements Human {

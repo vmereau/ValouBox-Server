@@ -8,10 +8,27 @@ import { Channel } from "./channel.entity";
 @Injectable()
 export class ChannelService {
 
+  private activeChannels = new Map<Channel, Set<User>>();
+
   constructor(private readonly channelDao: ChannelDao) {}
 
   public async findOneById(id: number): Promise<Channel> {
     return this.channelDao.findOneById(id);
+  }
+
+  public joinChannel(user: User, channel: Channel): Set<User> {
+    if(!this.activeChannels.has(channel)) {
+      this.activeChannels.set(channel, new Set());
+    }
+
+    const userList = this.activeChannels.get(channel);
+    userList.add(user);
+
+    return userList;
+  }
+
+  public getUserList(channel): Set<User> | undefined {
+    return this.activeChannels.get(channel);
   }
 
   public async createChannel(

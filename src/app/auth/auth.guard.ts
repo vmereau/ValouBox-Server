@@ -8,6 +8,7 @@ import { UnauthorizedUserError } from "./auth.errors";
 import { JwtPayload, JwtType } from "./auth.types";
 import { UserDao } from "../core/dao/user.dao";
 import { GqlContextType, GqlExecutionContext } from "@nestjs/graphql";
+import { getGraphqlSubscriptionRequestContext } from "../core/helpers";
 
 /**
  * Authenticate by JWT and check for user availability
@@ -35,7 +36,8 @@ export class AuthGuard implements CanActivate {
     let request: Request;
     if(context.getType<GqlContextType>() === "graphql"){
       const gqlCtx = GqlExecutionContext.create(context);
-      request = gqlCtx.getContext().req;
+
+      request = gqlCtx.getContext().req?.subscriptions ? getGraphqlSubscriptionRequestContext(gqlCtx.getContext()) : gqlCtx.getContext().req;
     } else {
       request = context.switchToHttp().getRequest();
     }
