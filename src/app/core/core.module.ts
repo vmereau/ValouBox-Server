@@ -16,7 +16,8 @@ declare global {
     interface Request {
       queryRunner: QueryRunner;
       em: EntityManager;
-      user: User
+      user: User,
+      channelId?: number
     }
   }
 }

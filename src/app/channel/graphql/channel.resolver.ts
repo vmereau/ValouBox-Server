@@ -1,4 +1,4 @@
-import { Args, Context, GqlExecutionContext, Mutation, Query, Resolver, Subscription } from "@nestjs/graphql";
+import { Args, Context, Mutation, Query, Resolver, Subscription } from "@nestjs/graphql";
 import { UserDao } from "../../core/dao/user.dao";
 import { Inject } from "@nestjs/common";
 import { PubSub } from "graphql-subscriptions";
@@ -6,13 +6,20 @@ import { ChannelService } from "../channel.service";
 import { Channel } from "../channel.entity";
 import { User } from "../../user/user.entity";
 import { UknownUserError } from "../../message/message.errors";
+import { Message } from "../../message/message.entity";
+import { GqlSubTags } from "../../app.constants";
 import { getGraphqlSubscriptionRequestContext } from "../../core/helpers";
-import { MessageAddedPayload } from "../../message/graphql/message.resolver";
-import { GglSubTags } from "../../app.constants";
 
-export interface UserListUpdatePayload {
-  userList: Set<User>,
-  channel: Channel
+export enum ChannelUpdateType {
+  NewMessage = "NEW_MESSAGE",
+  UserListUpdate = "USER_LIST_UPDATE"
+}
+
+export interface ChannelUpdatePayload {
+  channelId: number,
+  updateType: ChannelUpdateType,
+  userList?: User[],
+  newMessage?: Message,
 }
 
 @Resolver('Channel')
@@ -30,7 +37,6 @@ export class ChannelResolver {
 
   @Mutation('postChannel')
   async postChannel(@Args('name') name: string,
-                    @Args('creatorId') creatorId: number,
                     @Context() context): Promise<Channel> {
     const request = context.req;
 
@@ -43,42 +49,25 @@ export class ChannelResolver {
     return await this.channelService.createChannel(name, creator, request.em);
   }
 
-  @Mutation('joinChannel')
-  async joinChannel(@Args('channelId') channelId: number,
-                    @Context() context): Promise<Set<User>> {
-    const request = context.req;
 
-    const joiningUser: User = request.user;
+  @Subscription('channel', {
+    filter: (payload: ChannelUpdatePayload, variables: { channelId: string }) => {
+      return payload.channelId === Number.parseInt(variables.channelId)
+    },
+    resolve: (value: ChannelUpdatePayload) => {
+      return value;
+    }
+  })
+  async channelSubscription(@Args('channelId') channelId: number,
+                            @Context() context) {
+    const request = getGraphqlSubscriptionRequestContext(context);
+    request["channelId"] = channelId;
+
     const channel = await this.channelService.findOneById(channelId);
-    const userList = this.channelService.joinChannel(joiningUser, channel);
+    const joiningUser: User = request.user;
+    await this.channelService.joinChannel(joiningUser, channel);
 
-    await this.pubSub.publish(GglSubTags.UserListUpdate, { userList, channel });
-
-    return userList;
-  }
-
-  @Subscription('newMessage', {
-    filter: (payload: MessageAddedPayload, variables: { channelId: string }) => {
-      return payload.channel.id === Number.parseInt(variables.channelId)
-    },
-    resolve: (value: MessageAddedPayload) => {
-      return value.newMessage;
-    }
-  })
-  async newMessage() {
-    return this.pubSub.asyncIterableIterator(GglSubTags.NewMessage);
-  }
-
-  @Subscription('userListUpdate', {
-    filter: (payload: UserListUpdatePayload, variables: { channelId: string }) => {
-      return payload.channel.id === Number.parseInt(variables.channelId)
-    },
-    resolve: (value: UserListUpdatePayload) => {
-      return value.userList;
-    }
-  })
-  async userListUpdate() {
-    return this.pubSub.asyncIterableIterator(GglSubTags.UserListUpdate);
+    return this.pubSub.asyncIterableIterator(GqlSubTags.ChannelUpdate);
   }
 }
 

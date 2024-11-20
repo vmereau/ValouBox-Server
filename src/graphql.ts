@@ -8,6 +8,11 @@
 /* tslint:disable */
 /* eslint-disable */
 
+export enum ChannelUpdateType {
+    NEW_MESSAGE = "NEW_MESSAGE",
+    USER_LIST_UPDATE = "USER_LIST_UPDATE"
+}
+
 export interface Human {
     name: string;
 }
@@ -19,6 +24,13 @@ export class Channel {
     name?: Nullable<string>;
 }
 
+export class ChannelUpdate {
+    channelId: number;
+    newMessage?: Nullable<Message>;
+    updateType: ChannelUpdateType;
+    userList?: Nullable<Nullable<User>[]>;
+}
+
 export class Message {
     channel?: Nullable<Channel>;
     content?: Nullable<string>;
@@ -28,8 +40,6 @@ export class Message {
 }
 
 export abstract class IMutation {
-    abstract joinChannel(channelId: number): Nullable<Nullable<User>[]> | Promise<Nullable<Nullable<User>[]>>;
-
     abstract postChannel(name: string): Nullable<Channel> | Promise<Nullable<Channel>>;
 
     abstract postMessage(channelId: number, content: string): Nullable<Message> | Promise<Nullable<Message>>;
@@ -44,9 +54,7 @@ export abstract class IQuery {
 }
 
 export abstract class ISubscription {
-    abstract newMessage(channelId: number): Nullable<Message> | Promise<Nullable<Message>>;
-
-    abstract userListUpdate(channelId: number): Nullable<Nullable<User>[]> | Promise<Nullable<Nullable<User>[]>>;
+    abstract channel(channelId: number): Nullable<ChannelUpdate> | Promise<Nullable<ChannelUpdate>>;
 }
 
 export class User implements Human {

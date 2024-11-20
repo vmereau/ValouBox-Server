@@ -14,6 +14,8 @@ import { join } from 'path';
 import { upperDirectiveTransformer } from "./core/graphql/directives/upper-case.directive";
 import { GlobalModule } from "./global.module";
 import { ChannelModule } from "./channel/channel.module";
+import { ChannelService } from "./channel/channel.service";
+import { Request } from "express";
 
 @Module({
   imports: [
@@ -29,23 +31,33 @@ import { ChannelModule } from "./channel/channel.module";
       envFilePath: '.env',
       isGlobal: true,
     }),
-    GraphQLModule.forRoot<ApolloDriverConfig>({
+    GraphQLModule.forRootAsync<ApolloDriverConfig>({
       driver: ApolloDriver,
-      installSubscriptionHandlers: true,
-      // include: [MessageModule, UserModule],
-      //autoSchemaFile: 'schema.gql',
-      typePaths: ['./**/graphql/*.graphql'],
-      transformSchema: schema => upperDirectiveTransformer(schema, 'upper'),
-      definitions: {
-        path: join(process.cwd(), 'src/graphql.ts'),
-        outputAs: 'class',
-      },
-      subscriptions: {
-        'graphql-ws': true,
-        'subscriptions-transport-ws': true,
-      },
-      sortSchema: true,
-      playground: true
+      imports: [ChannelModule],
+      inject:[ChannelService],
+      useFactory: async (channelService: ChannelService) => ({
+        installSubscriptionHandlers: true,
+        typePaths: ['./**/graphql/*.graphql'],
+        transformSchema: schema => upperDirectiveTransformer(schema, 'upper'),
+        definitions: {
+          path: join(process.cwd(), 'src/graphql.ts'),
+          outputAs: 'class',
+        },
+        subscriptions: {
+          'graphql-ws': {
+            onDisconnect: (ctx) => {
+              const extraCTX = ctx.extra as any;
+              const request: Request = extraCTX.request;
+
+              if(extraCTX.request){
+                channelService.removeUserFromChannel(request.user, request.channelId);
+              }
+            }
+          }
+        },
+        sortSchema: true,
+        playground: true
+      })
     }),
   ],
   controllers: [],

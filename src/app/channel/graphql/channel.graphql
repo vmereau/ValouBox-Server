@@ -7,17 +7,27 @@ type Channel {
     creationDate: Date
 }
 
+enum ChannelUpdateType {
+    NEW_MESSAGE,
+    USER_LIST_UPDATE
+}
+
+type ChannelUpdate {
+    channelId: Int!
+    updateType: ChannelUpdateType!,
+    userList: [User],
+    newMessage: Message,
+}
+
 type Query {
     channel(id: Int!): Channel
 }
 
 type Mutation {
     postChannel(name: String!): Channel
-    joinChannel(channelId: Int!): [User]
 }
 
 type Subscription {
-    newMessage(channelId: Int!): Message
-    userListUpdate(channelId: Int!): [User]
+    channel(channelId: Int!): ChannelUpdate
 }
 

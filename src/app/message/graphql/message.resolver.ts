@@ -1,19 +1,15 @@
-import { Args, Resolver, Query, Mutation, Subscription, Context } from "@nestjs/graphql";
+import { Args, Context, Mutation, Query, Resolver } from "@nestjs/graphql";
 import { MessageService } from "../message.service";
 import { Message } from "../message.entity";
 import { UserDao } from "../../core/dao/user.dao";
-import { Inject, Req } from "@nestjs/common";
+import { Inject } from "@nestjs/common";
 import { PubSub } from "graphql-subscriptions";
 import { ChannelDao } from "../../core/dao/channel.dao";
 import { Channel } from "../../channel/channel.entity";
 import { User } from "../../user/user.entity";
 import { UknownChannelError, UknownUserError } from "../message.errors";
-import { GglSubTags } from "../../app.constants";
-
-export interface MessageAddedPayload {
-  newMessage: Message,
-  channel: Channel
-}
+import { ChannelUpdatePayload, ChannelUpdateType } from "../../channel/graphql/channel.resolver";
+import { GqlSubTags } from "../../app.constants";
 
 @Resolver('Message')
 export class MessageResolver {
@@ -48,7 +44,13 @@ export class MessageResolver {
 
     const newMessage: Message = await this.messageService.createMessage(content, channel, sender, request.em);
 
-    await this.pubSub.publish(GglSubTags.NewMessage, { newMessage, channel });
+    const payload: ChannelUpdatePayload = {
+      channelId: channel.id,
+      updateType: ChannelUpdateType.NewMessage,
+      newMessage: newMessage
+    }
+
+    await this.pubSub.publish(GqlSubTags.ChannelUpdate, payload);
 
     return newMessage;
   }
