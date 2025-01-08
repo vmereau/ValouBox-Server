@@ -9,6 +9,10 @@ Features:
  - transaction interceptor to have 1 database transaction per endpoint call for REST API
  - GraphQL integration with queries, mutations and subscriptions
 
+Note:
+This project is not finished, as there is still a lot to be done in the future when I intend
+to resume development (Guards, REST api, tests, documentation...)
+
 ## Installation
 
 ```bash
